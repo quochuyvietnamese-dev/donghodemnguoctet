@@ -3,29 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tết 2026 & Lịch Vạn Niên Custom</title>
+    <title>Đếm Ngược Đa Năng 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ff3838; --gold: #ffcc00; }
         body {
             margin: 0; font-family: 'Quicksand', sans-serif;
             background: linear-gradient(135deg, #800000 0%, #b30000 100%);
-            color: white; min-height: 100vh; overflow-x: hidden;
-            display: flex; flex-direction: column; align-items: center; padding-top: 20px;
+            color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 0;
         }
 
-        /* Countdown Style */
+        /* Countdown */
         .countdown-wrap {
             background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
             padding: 20px; border-radius: 20px; text-align: center;
             border: 1px solid rgba(255,255,255,0.2); width: 90%; max-width: 500px; margin-bottom: 20px;
+            position: relative;
         }
-        h1 { font-family: 'Dancing Script', cursive; color: var(--gold); margin: 0; font-size: 2.5rem; }
+        h1 { font-family: 'Dancing Script', cursive; color: var(--gold); margin: 0; font-size: 2.2rem; min-height: 60px; }
         .timer { display: flex; justify-content: space-around; margin-top: 15px; }
         .timer-item { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; min-width: 70px; border-bottom: 3px solid var(--gold); }
         .timer-item b { display: block; font-size: 1.8rem; color: var(--gold); }
+        
+        #reset-btn {
+            background: var(--gold); color: #800000; border: none; padding: 5px 15px;
+            border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; display: none;
+        }
 
-        /* Calendar Style */
+        /* Calendar */
         .calendar-container {
             background: white; color: #333; width: 90%; max-width: 500px;
             border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -34,41 +39,46 @@
             background: var(--primary); color: white; padding: 15px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .cal-header button { background: none; border: 1px solid white; color: white; border-radius: 5px; cursor: pointer; }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px; text-align: center; }
-        .day-name { font-weight: bold; color: var(--primary); padding-bottom: 10px; font-size: 0.8rem; }
+        .cal-header button { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px; }
+        .day-name { font-weight: bold; color: var(--primary); text-align: center; padding: 10px 0; font-size: 0.8rem; }
         .date {
-            padding: 10px 0; border-radius: 8px; cursor: pointer; transition: 0.2s;
-            position: relative; height: 50px; display: flex; flex-direction: column; justify-content: center;
+            padding: 8px 0; border-radius: 8px; cursor: pointer; text-align: center;
+            position: relative; height: 55px; display: flex; flex-direction: column; justify-content: center;
         }
-        .date:hover { background: #f0f0f0; }
-        .date.today { background: #ffebee; border: 1px solid var(--primary); }
-        .date .solar { font-weight: bold; font-size: 1.1rem; }
-        .date .lunar { font-size: 0.65rem; color: #777; }
+        .date:hover { background: #ffebeb; transform: scale(1.1); z-index: 2; transition: 0.2s; }
+        .date.selected { background: #ff3838 !important; color: white !important; }
+        .date .solar { font-weight: bold; font-size: 1rem; }
+        
+        .is-holiday::after {
+            content: "•"; position: absolute; bottom: 2px; left: 0; right: 0;
+            font-size: 1rem; color: var(--primary);
+        }
         .date.sunday { color: var(--primary); }
+        .date.today { border: 2px solid var(--gold); background: #fffde7; }
 
-        /* Music & Petals */
+        .music-btn { position: fixed; bottom: 20px; right: 20px; background: var(--gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; }
         .petal { position: absolute; top: -10%; pointer-events: none; animation: fall linear infinite; z-index: 100; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
-        .music-btn { position: fixed; bottom: 20px; right: 20px; background: var(--gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
     <div class="countdown-wrap">
-        <h1 id="tet-name">Tết Bính Ngọ 2026</h1>
+        <h1 id="countdown-title">Đang tải...</h1>
         <div class="timer">
             <div class="timer-item"><b id="d">00</b><span>Ngày</span></div>
             <div class="timer-item"><b id="h">00</b><span>Giờ</span></div>
             <div class="timer-item"><b id="m">00</b><span>Phút</span></div>
             <div class="timer-item"><b id="s">00</b><span>Giây</span></div>
         </div>
+        <button id="reset-btn" onclick="resetToTet()">Quay lại đếm Tết 🌸</button>
     </div>
 
     <div class="calendar-container">
         <div class="cal-header">
             <button onclick="changeMonth(-1)">◄</button>
-            <div id="cal-month-year" style="font-weight: bold;">Tháng 02/2026</div>
+            <div id="cal-month-year" style="font-weight: bold;"></div>
             <button onclick="changeMonth(1)">►</button>
         </div>
         <div class="cal-grid" id="cal-grid">
@@ -81,44 +91,73 @@
     <audio id="bg-music" loop src="https://files.catbox.moe/97968x.mp3"></audio>
 
     <script>
-        // Thuật toán rút gọn để tính ngày âm (Ví dụ đơn giản, thực tế cần thư viện đầy đủ)
-        // Để demo chính xác nhất, ta giả định các mốc ngày âm cơ bản
-        function getLunar(d, m, y) {
-            // Đây là chỗ để nhúng hàm chuyển đổi AmLich.js
-            // Tạm thời giả lập: Mùng 1 Tết 2026 là 17/02
-            if(y==2026 && m==2 && d==17) return "1/1";
-            if(y==2026 && m==2 && d==18) return "2/1";
-            return ""; // Trả về trống nếu chưa tính
-        }
-
+        const holidays = { "1-1": "Tết Tây", "17-2": "Tết Bính Ngọ", "8-3": "8/3 Phụ Nữ", "30-4": "Giải Phóng", "1-5": "Quốc tế LĐ", "2-9": "Quốc Khánh", "25-12": "Giáng Sinh" };
+        const tetDates = { 2026: "Feb 17, 2026 00:00:00", 2027: "Feb 06, 2027 00:00:00" };
+        
+        let currentTargetDate = null;
+        let currentTargetName = "";
         let currentViewMonth = new Date().getMonth() + 1;
         let currentViewYear = new Date().getFullYear();
 
+        function initTarget() {
+            const now = new Date();
+            let y = now.getFullYear();
+            if (now > new Date(tetDates[y])) y++;
+            currentTargetDate = new Date(tetDates[y]);
+            currentTargetName = `Tết Nguyên Đán ${y}`;
+            document.getElementById('reset-btn').style.display = "none";
+        }
+
+        function selectDate(d, m, y) {
+            currentTargetDate = new Date(y, m - 1, d);
+            const holidayKey = `${d}-${m}`;
+            currentTargetName = holidays[holidayKey] ? holidays[holidayKey] : `Ngày ${d} tháng ${m}`;
+            
+            document.getElementById('reset-btn').style.display = "inline-block";
+            renderCalendar(currentViewMonth, currentViewYear);
+            updateCountdown();
+        }
+
+        function resetToTet() {
+            initTarget();
+            renderCalendar(currentViewMonth, currentViewYear);
+        }
+
         function renderCalendar(month, year) {
             const grid = document.getElementById('cal-grid');
-            // Giữ lại 7 ngày đầu (CN-T7)
             while(grid.children.length > 7) grid.lastChild.remove();
-            
-            document.getElementById('cal-month-year').innerText = `Tháng ${month < 10 ? '0'+month : month}/${year}`;
+            document.getElementById('cal-month-year').innerText = `Tháng ${month}/${year}`;
             
             let firstDay = new Date(year, month - 1, 1).getDay();
             let daysInMonth = new Date(year, month, 0).getDate();
 
-            for(let i=0; i<firstDay; i++) {
-                let empty = document.createElement('div');
-                grid.appendChild(empty);
-            }
+            for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
 
             for(let d=1; d<=daysInMonth; d++) {
                 let div = document.createElement('div');
                 div.className = 'date';
+                if(holidays[`${d}-${month}`]) div.classList.add('is-holiday');
+                if(d === new Date().getDate() && month === (new Date().getMonth()+1) && year === new Date().getFullYear()) div.classList.add('today');
+                if(currentTargetDate && d === currentTargetDate.getDate() && month === (currentTargetDate.getMonth()+1) && year === currentTargetDate.getFullYear()) div.classList.add('selected');
                 if(new Date(year, month-1, d).getDay() == 0) div.classList.add('sunday');
-                
-                // Giả lập ngày âm đơn giản cho demo
-                let lunar = (d % 29) + 1; 
-                div.innerHTML = `<span class="solar">${d}</span><span class="lunar">${lunar}</span>`;
+
+                div.innerHTML = `<span class="solar">${d}</span>`;
+                div.onclick = () => selectDate(d, month, year);
                 grid.appendChild(div);
             }
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = currentTargetDate - now;
+            
+            document.getElementById('countdown-title').innerText = diff > 0 ? `Đếm ngược đến: ${currentTargetName}` : `Đã đến ngày: ${currentTargetName}!`;
+            
+            const time = Math.abs(diff);
+            document.getElementById('d').innerText = Math.floor(time/86400000).toString().padStart(2,'0');
+            document.getElementById('h').innerText = Math.floor((time%86400000)/3600000).toString().padStart(2,'0');
+            document.getElementById('m').innerText = Math.floor((time%3600000)/60000).toString().padStart(2,'0');
+            document.getElementById('s').innerText = Math.floor((time%60000)/1000).toString().padStart(2,'0');
         }
 
         function changeMonth(step) {
@@ -126,20 +165,6 @@
             if(currentViewMonth > 12) { currentViewMonth = 1; currentViewYear++; }
             if(currentViewMonth < 1) { currentViewMonth = 12; currentViewYear--; }
             renderCalendar(currentViewMonth, currentViewYear);
-        }
-
-        // Countdown Logic
-        const tetDates = { 2026: "Feb 17, 2026", 2027: "Feb 06, 2027" };
-        function updateCountdown() {
-            const now = new Date();
-            let y = now.getFullYear();
-            if (now > new Date(tetDates[y])) y++;
-            const diff = new Date(tetDates[y]) - now;
-            
-            document.getElementById('d').innerText = Math.floor(diff/86400000);
-            document.getElementById('h').innerText = Math.floor((diff%86400000)/3600000);
-            document.getElementById('m').innerText = Math.floor((diff%3600000)/60000);
-            document.getElementById('s').innerText = Math.floor((diff%60000)/1000);
         }
 
         function toggleMusic() {
@@ -157,10 +182,10 @@
             setTimeout(() => p.remove(), 4000);
         }
 
+        initTarget();
         setInterval(updateCountdown, 1000);
-        setInterval(createPetal, 300);
+        setInterval(createPetal, 400);
         renderCalendar(currentViewMonth, currentViewYear);
-        updateCountdown();
     </script>
 </body>
 </html>
