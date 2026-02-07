@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đếm Ngược Tết Đa Năng</title>
+    <title>Lịch Vạn Niên & Đếm Ngược 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ff3838; --gold: #ffcc00; --bg: #800000; }
@@ -12,53 +12,71 @@
             margin: 0; font-family: 'Quicksand', sans-serif;
             background: var(--bg); color: white; min-height: 100vh;
             display: flex; flex-direction: column; align-items: center; padding: 20px 0;
-            transition: background 0.5s ease; overflow-x: hidden;
+            transition: all 0.5s ease; overflow-x: hidden;
         }
 
-        body.theme-tet { background: linear-gradient(135deg, #800000 0%, #b30000 100%); }
+        /* Themes */
+        body.theme-tet { background: linear-gradient(135deg, #800000 0%, #d32f2f 100%); }
         body.theme-normal { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
 
         .countdown-wrap {
             background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px);
             padding: 25px; border-radius: 30px; text-align: center;
             border: 1px solid rgba(255,255,255,0.3); width: 90%; max-width: 500px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); z-index: 10;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 10;
         }
 
-        h1 { font-family: 'Dancing Script', cursive; color: var(--gold); margin: 0; font-size: 2.2rem; min-height: 60px; }
+        h1 { font-family: 'Dancing Script', cursive; color: var(--gold); margin: 0; font-size: 2.2rem; min-height: 60px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
 
         .timer { display: flex; justify-content: space-around; margin-top: 15px; }
         .timer-item { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 15px; min-width: 75px; border-bottom: 4px solid var(--gold); }
         .timer-item b { display: block; font-size: 2rem; color: var(--gold); }
 
+        #firework-btn {
+            background: var(--gold); color: #800000; border: none; padding: 10px 25px;
+            border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 15px;
+            display: none; box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4); font-family: 'Quicksand';
+        }
+
+        #reset-btn {
+            background: none; border: 1px solid white; color: white; padding: 5px 15px;
+            border-radius: 15px; cursor: pointer; margin-top: 10px; display: none; font-size: 0.8rem;
+        }
+
         /* Calendar */
         .calendar-container {
-            background: white; color: #333; width: 90%; max-width: 500px; margin-top: 20px;
-            border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            background: white; color: #333; width: 90%; max-width: 500px; margin-top: 25px;
+            border-radius: 25px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        .cal-header { background: #333; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px; }
-        .date { padding: 10px 0; border-radius: 10px; cursor: pointer; text-align: center; position: relative; height: 50px; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .cal-header { background: #222; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .cal-header button { background: none; border: 1px solid #555; color: white; border-radius: 5px; cursor: pointer; padding: 5px 12px; }
         
-        /* Đánh dấu ngày hôm nay */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 15px; }
+        .day-name { font-weight: bold; color: var(--primary); text-align: center; padding-bottom: 10px; font-size: 0.9rem; }
+        
+        .date { 
+            padding: 10px 0; border-radius: 12px; cursor: pointer; text-align: center; 
+            position: relative; height: 50px; display: flex; align-items: center; 
+            justify-content: center; font-weight: 700; transition: 0.2s;
+        }
+        .date:hover { background: #f0f0f0; transform: scale(1.1); z-index: 5; }
+
+        /* Hào quang cho ngày hôm nay */
         .today { 
-            background: #fff9c4 !important; 
-            box-shadow: inset 0 0 10px #ffeb3b, 0 0 10px var(--gold);
+            background: #fffde7 !important;
             border: 2px solid var(--gold);
+            box-shadow: 0 0 15px var(--gold);
+            color: #000;
         }
 
         /* Đánh dấu ngày lễ */
-        .holiday { background: #ffebee; color: var(--primary); }
-        .holiday::after { content: "•"; color: var(--primary); font-size: 1.2rem; position: absolute; bottom: 2px; }
-
-        .selected { background: var(--primary) !important; color: white !important; }
-        .day-name { font-weight: bold; color: var(--primary); text-align: center; padding-bottom: 10px; }
-
-        #firework-btn {
-            background: var(--gold); color: #800000; border: none; padding: 10px 20px;
-            border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 15px;
-            display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        .holiday { color: var(--primary); }
+        .holiday::after { 
+            content: "•"; color: var(--primary); font-size: 1.5rem; 
+            position: absolute; bottom: -2px; 
         }
+
+        .selected { background: var(--primary) !important; color: white !important; box-shadow: none !important; }
 
         .petal { position: absolute; top: -10%; pointer-events: none; animation: fall linear infinite; z-index: 5; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
@@ -74,91 +92,76 @@
             <div class="timer-item"><b id="m">00</b><span>Phút</span></div>
             <div class="timer-item"><b id="s">00</b><span>Giây</span></div>
         </div>
-        <button id="firework-btn" onclick="manualFirework()">🎆 Bắn Pháo Hoa!</button>
-        <button id="reset-btn" onclick="resetToTet()" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:10px; cursor:pointer; margin-top:10px; display:none;">Về Tết 🌸</button>
+        <button id="firework-btn" onclick="shootFirework()">🎆 Bắn Pháo Hoa!</button><br>
+        <button id="reset-btn" onclick="resetToTet()">Quay lại đếm Tết 🌸</button>
     </div>
 
     <div class="calendar-container">
         <div class="cal-header">
-            <button onclick="changeMonth(-1)" style="color:white; background:none; border:1px solid white; border-radius:5px;">◄</button>
-            <div id="cal-month-year" style="font-weight: bold;"></div>
-            <button onclick="changeMonth(1)" style="color:white; background:none; border:1px solid white; border-radius:5px;">►</button>
+            <button onclick="changeMonth(-1)">◄</button>
+            <div id="cal-month-year" style="font-size: 1.1rem;"></div>
+            <button onclick="changeMonth(1)">►</button>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
     </div>
 
+    <div style="position: fixed; bottom: 20px; left: 20px; cursor: pointer; font-size: 1.5rem;" onclick="toggleMusic()">🎵</div>
+    <audio id="bg-music" loop src="https://files.catbox.moe/97968x.mp3"></audio>
+
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
-        // Danh sách ngày lễ dương lịch cố định
-        const fixedHolidays = { "1-1": "Tết Tây", "14-2": "Valentine", "8-3": "8/3 Phụ Nữ", "30-4": "Giải Phóng", "1-5": "Lao Động", "2-9": "Quốc Khánh", "25-12": "Noel" };
-        
-        // Dữ liệu Tết Nguyên Đán
-        const tetData = {
-            2026: { date: "Feb 17, 2026 00:00:00", name: "Bính Ngọ" },
-            2027: { date: "Feb 06, 2027 00:00:00", name: "Đinh Mùi" },
-            2028: { date: "Jan 26, 2028 00:00:00", name: "Mậu Thân" }
+        const holidayData = { "1-1": "Tết Tây", "14-2": "Valentine", "8-3": "Phụ Nữ", "30-4": "Giải Phóng", "1-5": "Lao Động", "2-9": "Quốc Khánh" };
+        const tets = {
+            2026: { d: "Feb 17, 2026 00:00:00", n: "Bính Ngọ" },
+            2027: { d: "Feb 06, 2027 00:00:00", n: "Đinh Mùi" },
+            2028: { d: "Jan 26, 2028 00:00:00", n: "Mậu Thân" }
         };
 
-        let targetDate = null, targetLabel = "", viewMonth = new Date().getMonth() + 1, viewYear = new Date().getFullYear();
+        let targetDate, targetLabel, vMonth = new Date().getMonth() + 1, vYear = new Date().getFullYear();
 
         function init() {
             const now = new Date();
             let y = now.getFullYear();
-            // Nếu đã qua mùng 1 Tết năm nay, đếm năm sau
-            if (now > new Date(tetData[y].date)) y++;
-            
-            setTarget(new Date(tetData[y].date), `Tết ${tetData[y].name} ${y}`);
+            if (now > new Date(tets[y].d)) y++;
+            setTarget(new Date(tets[y].d), `Tết ${tets[y].n} ${y}`);
             document.getElementById('reset-btn').style.display = "none";
         }
 
         function setTarget(date, label) {
             targetDate = date;
             targetLabel = label;
-            
-            // Đổi giao diện nếu là Tết
-            if (label.includes("Tết")) {
-                document.body.className = "theme-tet";
-                document.getElementById('firework-btn').style.display = "inline-block";
-            } else {
-                document.body.className = "theme-normal";
-                document.getElementById('firework-btn').style.display = "none";
-            }
-            renderCalendar(viewMonth, viewYear);
+            const isTet = label.includes("Tết");
+            document.body.className = isTet ? "theme-tet" : "theme-normal";
+            document.getElementById('firework-btn').style.display = isTet ? "inline-block" : "none";
+            renderCalendar(vMonth, vYear);
         }
 
         function renderCalendar(m, y) {
             const grid = document.getElementById('cal-grid');
             grid.innerHTML = '<div class="day-name">CN</div><div class="day-name">T2</div><div class="day-name">T3</div><div class="day-name">T4</div><div class="day-name">T5</div><div class="day-name">T6</div><div class="day-name">T7</div>';
-            document.getElementById('cal-month-year').innerText = `Tháng ${m}/${y}`;
+            document.getElementById('cal-month-year').innerText = `Tháng ${m} / ${y}`;
             
-            let firstDay = new Date(y, m - 1, 1).getDay();
-            let daysInMonth = new Date(y, m, 0).getDate();
-            let today = new Date();
+            const first = new Date(y, m - 1, 1).getDay();
+            const days = new Date(y, m, 0).getDate();
+            const today = new Date();
 
-            for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
+            for(let i=0; i<first; i++) grid.appendChild(document.createElement('div'));
 
-            for(let d=1; d<=daysInMonth; d++) {
-                let div = document.createElement('div');
+            for(let d=1; d<=days; d++) {
+                const div = document.createElement('div');
                 div.className = 'date';
-                div.innerHTML = d;
-
-                // Check ngày hôm nay (Màu vàng xung quanh)
-                if(d === today.getDate() && m === (today.getMonth()+1) && y === today.getFullYear()) {
-                    div.classList.add('today');
-                }
-
-                // Check ngày lễ
-                if(fixedHolidays[`${d}-${m}`]) div.classList.add('holiday');
-
-                // Check ngày đang được chọn đếm ngược
-                if(targetDate.getDate() === d && (targetDate.getMonth()+1) === m && targetDate.getFullYear() === y) {
-                    div.classList.add('selected');
-                }
+                div.innerText = d;
+                
+                const isToday = d === today.getDate() && m === (today.getMonth()+1) && y === today.getFullYear();
+                const isTarget = targetDate.getDate() === d && (targetDate.getMonth()+1) === m && targetDate.getFullYear() === y;
+                
+                if(isToday) div.classList.add('today');
+                if(holidayData[`${d}-${m}`]) div.classList.add('holiday');
+                if(isTarget) div.classList.add('selected');
 
                 div.onclick = () => {
-                    const selected = new Date(y, m - 1, d);
-                    const name = fixedHolidays[`${d}-${m}`] || `Ngày ${d}/${m}/${y}`;
-                    setTarget(selected, name);
+                    const sel = new Date(y, m-1, d);
+                    setTarget(sel, holidayData[`${d}-${m}`] || `Ngày ${d}/${m}/${y}`);
                     document.getElementById('reset-btn').style.display = "inline-block";
                 };
                 grid.appendChild(div);
@@ -166,38 +169,34 @@
         }
 
         function updateCountdown() {
-            const now = new Date();
-            const diff = targetDate - now;
+            const diff = targetDate - new Date();
             document.getElementById('countdown-title').innerText = diff > 0 ? `Đếm ngược: ${targetLabel}` : `Chào mừng ${targetLabel}!`;
-            
-            const time = Math.max(0, Math.abs(diff));
-            document.getElementById('d').innerText = Math.floor(time/86400000).toString().padStart(2,'0');
-            document.getElementById('h').innerText = Math.floor((time%86400000)/3600000).toString().padStart(2,'0');
-            document.getElementById('m').innerText = Math.floor((time%3600000)/60000).toString().padStart(2,'0');
-            document.getElementById('s').innerText = Math.floor((time%60000)/1000).toString().padStart(2,'0');
+            const t = Math.max(0, Math.abs(diff));
+            document.getElementById('d').innerText = Math.floor(t/86400000).toString().padStart(2,'0');
+            document.getElementById('h').innerText = Math.floor((t%86400000)/3600000).toString().padStart(2,'0');
+            document.getElementById('m').innerText = Math.floor((t%3600000)/60000).toString().padStart(2,'0');
+            document.getElementById('s').innerText = Math.floor((t%60000)/1000).toString().padStart(2,'0');
         }
 
-        function manualFirework() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ffeb3b', '#f44336', '#ffffff'] });
+        function shootFirework() {
+            const duration = 3 * 1000;
+            const end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffeb3b', '#f44336'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffeb3b', '#f44336'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
         }
 
-        function changeMonth(s) {
-            viewMonth += s;
-            if(viewMonth > 12) { viewMonth = 1; viewYear++; }
-            else if(viewMonth < 1) { viewMonth = 12; viewYear--; }
-            renderCalendar(viewMonth, viewYear);
-        }
-
+        function changeMonth(s) { vMonth += s; if(vMonth>12){vMonth=1;vYear++} else if(vMonth<1){vMonth=12;vYear--} renderCalendar(vMonth, vYear); }
         function resetToTet() { init(); }
-
+        function toggleMusic() { const m = document.getElementById('bg-music'); m.paused ? m.play() : m.pause(); }
         function createPetal() {
             if (document.body.className !== "theme-tet") return;
             const p = document.createElement('div');
             p.innerHTML = "🌸"; p.className = 'petal';
-            p.style.left = Math.random()*100+'vw';
-            p.style.animationDuration = Math.random()*3+2+'s';
-            document.body.appendChild(p);
-            setTimeout(() => p.remove(), 4000);
+            p.style.left = Math.random()*100+'vw'; p.style.animationDuration = Math.random()*2+3+'s';
+            document.body.appendChild(p); setTimeout(() => p.remove(), 5000);
         }
 
         init();
