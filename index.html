@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đếm ngược Tết Bính Ngọ 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tet-red: #d32f2f;
+            --tet-gold: #ffeb3b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #8b0000 url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            color: var(--tet-gold);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .calendar-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 2px solid var(--tet-gold);
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .time-box {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 100px;
+            border-bottom: 5px solid var(--tet-gold);
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--tet-gold);
+        }
+
+        .time-box label {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Hiệu ứng pháo hoa đơn giản */
+        .firework {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 20px 5px var(--tet-gold);
+            animation: fire 2s infinite;
+        }
+
+        @keyframes fire {
+            0% { transform: translateY(100vh); opacity: 1; }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Chúc Mừng Năm Mới 2026</h1>
+
+    <div class="calendar-info" id="calendar">
+        Đang tải lịch...
+    </div>
+
+    <div class="countdown">
+        <div class="time-box">
+            <span id="days">00</span>
+            <label>Ngày</label>
+        </div>
+        <div class="time-box">
+            <span id="hours">00</span>
+            <label>Giờ</label>
+        </div>
+        <div class="time-box">
+            <span id="minutes">00</span>
+            <label>Phút</label>
+        </div>
+        <div class="time-box">
+            <span id="seconds">00</span>
+            <label>Giây</label>
+        </div>
+    </div>
+
+    <div class="footer">
+        Sắp đến Tết Bính Ngọ rồi ông giáo ạ!
+    </div>
+
+    <script>
+        // Thời điểm mùng 1 Tết Bính Ngọ (Dương lịch: 17/02/2026)
+        const tetDate = new Date("Feb 17, 2026 00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const gap = tetDate - now;
+
+            const second = 1000;
+            const minute = second * 60;
+            const hour = minute * 60;
+            const day = hour * 24;
+
+            const d = Math.floor(gap / day);
+            const h = Math.floor((gap % day) / hour);
+            const m = Math.floor((gap % hour) / minute);
+            const s = Math.floor((gap % minute) / second);
+
+            document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+            document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+            document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+            document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+
+            if (gap < 0) {
+                document.querySelector("h1").innerText = "CHÚC MỪNG NĂM MỚI!";
+                document.querySelector(".countdown").innerHTML = "<h2>Tết rồi ông ơi! Nhậu thôi!</h2>";
+            }
+        }
+
+        function showCalendar() {
+            const now = new Date();
+            const duongLich = `Hôm nay: ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+            
+            // Vì thuật toán âm lịch dài, ta hiển thị đơn giản hoặc dùng API
+            // Ở đây tôi ghi sẵn mốc cho ông dễ theo dõi
+            document.getElementById("calendar").innerHTML = `${duongLich} | Tết Bính Ngọ: 17/02/2026 Dương Lịch`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        showCalendar();
+        updateCountdown();
+    </script>
+</body>
+</html>
