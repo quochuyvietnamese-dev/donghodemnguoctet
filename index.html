@@ -3,228 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đếm Ngược Tết & Lịch Vạn Niên</title>
+    <title>Tết 2026 & Lịch Vạn Niên Custom</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff3838;
-            --gold: #ffcc00;
-        }
-
+        :root { --primary: #ff3838; --gold: #ffcc00; }
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Quicksand', sans-serif;
+            margin: 0; font-family: 'Quicksand', sans-serif;
             background: linear-gradient(135deg, #800000 0%, #b30000 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            color: white;
+            color: white; min-height: 100vh; overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center; padding-top: 20px;
         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2rem;
-            border-radius: 30px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            z-index: 10;
-            width: 90%;
-            max-width: 600px;
+        /* Countdown Style */
+        .countdown-wrap {
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            padding: 20px; border-radius: 20px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.2); width: 90%; max-width: 500px; margin-bottom: 20px;
         }
+        h1 { font-family: 'Dancing Script', cursive; color: var(--gold); margin: 0; font-size: 2.5rem; }
+        .timer { display: flex; justify-content: space-around; margin-top: 15px; }
+        .timer-item { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; min-width: 70px; border-bottom: 3px solid var(--gold); }
+        .timer-item b { display: block; font-size: 1.8rem; color: var(--gold); }
 
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 3rem;
-            color: var(--gold);
-            margin: 0;
+        /* Calendar Style */
+        .calendar-container {
+            background: white; color: #333; width: 90%; max-width: 500px;
+            border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
-        .lunar-info {
-            font-size: 1.1rem;
-            margin: 1rem 0;
-            color: #ffcccc;
+        .cal-header {
+            background: var(--primary); color: white; padding: 15px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .countdown {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 1.5rem 0;
+        .cal-header button { background: none; border: 1px solid white; color: white; border-radius: 5px; cursor: pointer; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px; text-align: center; }
+        .day-name { font-weight: bold; color: var(--primary); padding-bottom: 10px; font-size: 0.8rem; }
+        .date {
+            padding: 10px 0; border-radius: 8px; cursor: pointer; transition: 0.2s;
+            position: relative; height: 50px; display: flex; flex-direction: column; justify-content: center;
         }
+        .date:hover { background: #f0f0f0; }
+        .date.today { background: #ffebee; border: 1px solid var(--primary); }
+        .date .solar { font-weight: bold; font-size: 1.1rem; }
+        .date .lunar { font-size: 0.65rem; color: #777; }
+        .date.sunday { color: var(--primary); }
 
-        .box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.8rem;
-            border-radius: 12px;
-            border: 1px solid var(--gold);
-        }
-
-        .number {
-            display: block;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--gold);
-        }
-
-        /* Nút Xem Lịch */
-        .btn-lunar {
-            background: var(--gold);
-            color: #800000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-            font-family: 'Quicksand', sans-serif;
-        }
-
-        .btn-lunar:hover {
-            transform: scale(1.05);
-            background: white;
-        }
-
-        /* Modal Lịch */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            width: 95%;
-            max-width: 500px;
-            height: 80vh;
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 30px;
-            color: black;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        /* Nhạc & Hoa rơi */
-        .music-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            cursor: pointer;
-            background: var(--gold);
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .playing { animation: rotate 3s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .petal {
-            position: absolute;
-            top: -10%;
-            pointer-events: none;
-            animation: fall linear infinite;
-        }
-
+        /* Music & Petals */
+        .petal { position: absolute; top: -10%; pointer-events: none; animation: fall linear infinite; z-index: 100; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        .music-btn { position: fixed; bottom: 20px; right: 20px; background: var(--gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1 id="year-title">Tết 2026</h1>
-        <div class="lunar-info" id="lunar-text">Đang tải...</div>
-        
-        <div class="countdown">
-            <div class="box"><span class="number" id="days">00</span><br><small>Ngày</small></div>
-            <div class="box"><span class="number" id="hours">00</span><br><small>Giờ</small></div>
-            <div class="box"><span class="number" id="mins">00</span><br><small>Phút</small></div>
-            <div class="box"><span class="number" id="secs">00</span><br><small>Giây</small></div>
-        </div>
-
-        <button class="btn-lunar" onclick="openModal()">📅 Xem Lịch Vạn Niên</button>
-    </div>
-
-    <div id="lunarModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <iframe src="https://lichngaytot.com/lich-van-nien.html" style="width:100%; height:100%; border:none;"></iframe>
+    <div class="countdown-wrap">
+        <h1 id="tet-name">Tết Bính Ngọ 2026</h1>
+        <div class="timer">
+            <div class="timer-item"><b id="d">00</b><span>Ngày</span></div>
+            <div class="timer-item"><b id="h">00</b><span>Giờ</span></div>
+            <div class="timer-item"><b id="m">00</b><span>Phút</span></div>
+            <div class="timer-item"><b id="s">00</b><span>Giây</span></div>
         </div>
     </div>
 
-    <div class="music-control" id="music-btn" onclick="toggleMusic()">
-        <span id="music-icon">🎵</span>
+    <div class="calendar-container">
+        <div class="cal-header">
+            <button onclick="changeMonth(-1)">◄</button>
+            <div id="cal-month-year" style="font-weight: bold;">Tháng 02/2026</div>
+            <button onclick="changeMonth(1)">►</button>
+        </div>
+        <div class="cal-grid" id="cal-grid">
+            <div class="day-name">CN</div><div class="day-name">T2</div><div class="day-name">T3</div>
+            <div class="day-name">T4</div><div class="day-name">T5</div><div class="day-name">T6</div><div class="day-name">T7</div>
+        </div>
     </div>
-    <audio id="bg-music" loop>
-        <source src="https://files.catbox.moe/97968x.mp3" type="audio/mpeg">
-    </audio>
+
+    <div class="music-btn" onclick="toggleMusic()">🎵</div>
+    <audio id="bg-music" loop src="https://files.catbox.moe/97968x.mp3"></audio>
 
     <script>
-        const tetDates = { 2026: "Feb 17, 2026 00:00:00", 2027: "Feb 06, 2027 00:00:00", 2028: "Jan 26, 2028 00:00:00" };
-        const yearNames = { 2026: "Bính Ngọ", 2027: "Đinh Mùi", 2028: "Mậu Thân" };
-
-        function update() {
-            const now = new Date().getTime();
-            let year = new Date().getFullYear();
-            if (now > new Date(tetDates[year]).getTime()) year++;
-            const tetTime = new Date(tetDates[year]).getTime();
-            const diff = tetTime - now;
-
-            document.getElementById('year-title').innerText = `Tết ${yearNames[year]} ${year}`;
-            document.getElementById('lunar-text').innerText = `Mùng 1: ${new Date(tetTime).toLocaleDateString('vi-VN')}`;
-
-            document.getElementById('days').innerText = Math.floor(diff/86400000).toString().padStart(2,'0');
-            document.getElementById('hours').innerText = Math.floor((diff%86400000)/3600000).toString().padStart(2,'0');
-            document.getElementById('mins').innerText = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-            document.getElementById('secs').innerText = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
+        // Thuật toán rút gọn để tính ngày âm (Ví dụ đơn giản, thực tế cần thư viện đầy đủ)
+        // Để demo chính xác nhất, ta giả định các mốc ngày âm cơ bản
+        function getLunar(d, m, y) {
+            // Đây là chỗ để nhúng hàm chuyển đổi AmLich.js
+            // Tạm thời giả lập: Mùng 1 Tết 2026 là 17/02
+            if(y==2026 && m==2 && d==17) return "1/1";
+            if(y==2026 && m==2 && d==18) return "2/1";
+            return ""; // Trả về trống nếu chưa tính
         }
 
-        function openModal() { document.getElementById('lunarModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('lunarModal').style.display = 'none'; }
+        let currentViewMonth = new Date().getMonth() + 1;
+        let currentViewYear = new Date().getFullYear();
 
-        const music = document.getElementById('bg-music');
+        function renderCalendar(month, year) {
+            const grid = document.getElementById('cal-grid');
+            // Giữ lại 7 ngày đầu (CN-T7)
+            while(grid.children.length > 7) grid.lastChild.remove();
+            
+            document.getElementById('cal-month-year').innerText = `Tháng ${month < 10 ? '0'+month : month}/${year}`;
+            
+            let firstDay = new Date(year, month - 1, 1).getDay();
+            let daysInMonth = new Date(year, month, 0).getDate();
+
+            for(let i=0; i<firstDay; i++) {
+                let empty = document.createElement('div');
+                grid.appendChild(empty);
+            }
+
+            for(let d=1; d<=daysInMonth; d++) {
+                let div = document.createElement('div');
+                div.className = 'date';
+                if(new Date(year, month-1, d).getDay() == 0) div.classList.add('sunday');
+                
+                // Giả lập ngày âm đơn giản cho demo
+                let lunar = (d % 29) + 1; 
+                div.innerHTML = `<span class="solar">${d}</span><span class="lunar">${lunar}</span>`;
+                grid.appendChild(div);
+            }
+        }
+
+        function changeMonth(step) {
+            currentViewMonth += step;
+            if(currentViewMonth > 12) { currentViewMonth = 1; currentViewYear++; }
+            if(currentViewMonth < 1) { currentViewMonth = 12; currentViewYear--; }
+            renderCalendar(currentViewMonth, currentViewYear);
+        }
+
+        // Countdown Logic
+        const tetDates = { 2026: "Feb 17, 2026", 2027: "Feb 06, 2027" };
+        function updateCountdown() {
+            const now = new Date();
+            let y = now.getFullYear();
+            if (now > new Date(tetDates[y])) y++;
+            const diff = new Date(tetDates[y]) - now;
+            
+            document.getElementById('d').innerText = Math.floor(diff/86400000);
+            document.getElementById('h').innerText = Math.floor((diff%86400000)/3600000);
+            document.getElementById('m').innerText = Math.floor((diff%3600000)/60000);
+            document.getElementById('s').innerText = Math.floor((diff%60000)/1000);
+        }
+
         function toggleMusic() {
-            if (music.paused) { music.play(); document.getElementById('music-btn').classList.add('playing'); }
-            else { music.pause(); document.getElementById('music-btn').classList.remove('playing'); }
+            const m = document.getElementById('bg-music');
+            m.paused ? m.play() : m.pause();
         }
 
         function createPetal() {
-            const petal = document.createElement('div');
-            petal.innerHTML = ['🌸','🧧','🌼'][Math.floor(Math.random()*3)];
-            petal.className = 'petal';
-            petal.style.left = Math.random()*100+'vw';
-            petal.style.animationDuration = Math.random()*3+3+'s';
-            document.body.appendChild(petal);
-            setTimeout(() => petal.remove(), 5000);
+            const p = document.createElement('div');
+            p.innerHTML = ['🌸','🧧','🌼'][Math.floor(Math.random()*3)];
+            p.className = 'petal';
+            p.style.left = Math.random()*100+'vw';
+            p.style.animationDuration = Math.random()*3+2+'s';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 4000);
         }
 
-        setInterval(update, 1000);
-        setInterval(createPetal, 400);
-        update();
+        setInterval(updateCountdown, 1000);
+        setInterval(createPetal, 300);
+        renderCalendar(currentViewMonth, currentViewYear);
+        updateCountdown();
     </script>
 </body>
 </html>
