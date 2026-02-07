@@ -3,167 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đếm ngược Tết Bính Ngọ 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <title>Đếm Ngược Tết & Lịch Vạn Niên</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --tet-red: #d32f2f;
-            --tet-gold: #ffeb3b;
+            --primary: #ff3838;
+            --gold: #ffcc00;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: #8b0000 url('https://www.transparenttextures.com/patterns/dark-matter.png');
-            color: white;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #800000 0%, #b30000 100%);
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            overflow: hidden;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 30px;
             text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            z-index: 10;
+            width: 90%;
+            max-width: 600px;
         }
 
         h1 {
-            font-family: 'Pacifico', cursive;
+            font-family: 'Dancing Script', cursive;
             font-size: 3rem;
-            color: var(--tet-gold);
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-            margin-bottom: 10px;
+            color: var(--gold);
+            margin: 0;
         }
 
-        .calendar-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 30px;
-            border-radius: 50px;
-            border: 2px solid var(--tet-gold);
-            margin-bottom: 30px;
-            font-size: 1.2rem;
+        .lunar-info {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            color: #ffcccc;
         }
 
         .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid var(--gold);
+        }
+
+        .number {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* Nút Xem Lịch */
+        .btn-lunar {
+            background: var(--gold);
+            color: #800000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .btn-lunar:hover {
+            transform: scale(1.05);
+            background: white;
+        }
+
+        /* Modal Lịch */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 95%;
+            max-width: 500px;
+            height: 80vh;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 30px;
+            color: black;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        /* Nhạc & Hoa rơi */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            cursor: pointer;
+            background: var(--gold);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
         }
 
-        .time-box {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 15px;
-            min-width: 100px;
-            border-bottom: 5px solid var(--tet-gold);
+        .playing { animation: rotate 3s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .petal {
+            position: absolute;
+            top: -10%;
+            pointer-events: none;
+            animation: fall linear infinite;
         }
 
-        .time-box span {
-            display: block;
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--tet-gold);
-        }
-
-        .time-box label {
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-        }
-
-        .footer {
-            margin-top: 50px;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        /* Hiệu ứng pháo hoa đơn giản */
-        .firework {
-            position: fixed;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            box-shadow: 0 0 20px 5px var(--tet-gold);
-            animation: fire 2s infinite;
-        }
-
-        @keyframes fire {
-            0% { transform: translateY(100vh); opacity: 1; }
-            100% { transform: translateY(-10vh); opacity: 0; }
-        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <h1>Chúc Mừng Năm Mới 2026</h1>
+    <div class="container">
+        <h1 id="year-title">Tết 2026</h1>
+        <div class="lunar-info" id="lunar-text">Đang tải...</div>
+        
+        <div class="countdown">
+            <div class="box"><span class="number" id="days">00</span><br><small>Ngày</small></div>
+            <div class="box"><span class="number" id="hours">00</span><br><small>Giờ</small></div>
+            <div class="box"><span class="number" id="mins">00</span><br><small>Phút</small></div>
+            <div class="box"><span class="number" id="secs">00</span><br><small>Giây</small></div>
+        </div>
 
-    <div class="calendar-info" id="calendar">
-        Đang tải lịch...
+        <button class="btn-lunar" onclick="openModal()">📅 Xem Lịch Vạn Niên</button>
     </div>
 
-    <div class="countdown">
-        <div class="time-box">
-            <span id="days">00</span>
-            <label>Ngày</label>
-        </div>
-        <div class="time-box">
-            <span id="hours">00</span>
-            <label>Giờ</label>
-        </div>
-        <div class="time-box">
-            <span id="minutes">00</span>
-            <label>Phút</label>
-        </div>
-        <div class="time-box">
-            <span id="seconds">00</span>
-            <label>Giây</label>
+    <div id="lunarModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <iframe src="https://lichngaytot.com/lich-van-nien.html" style="width:100%; height:100%; border:none;"></iframe>
         </div>
     </div>
 
-    <div class="footer">
-        Sắp đến Tết Bính Ngọ rồi ông giáo ạ!
+    <div class="music-control" id="music-btn" onclick="toggleMusic()">
+        <span id="music-icon">🎵</span>
     </div>
+    <audio id="bg-music" loop>
+        <source src="https://files.catbox.moe/97968x.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        // Thời điểm mùng 1 Tết Bính Ngọ (Dương lịch: 17/02/2026)
-        const tetDate = new Date("Feb 17, 2026 00:00:00").getTime();
+        const tetDates = { 2026: "Feb 17, 2026 00:00:00", 2027: "Feb 06, 2027 00:00:00", 2028: "Jan 26, 2028 00:00:00" };
+        const yearNames = { 2026: "Bính Ngọ", 2027: "Đinh Mùi", 2028: "Mậu Thân" };
 
-        function updateCountdown() {
+        function update() {
             const now = new Date().getTime();
-            const gap = tetDate - now;
+            let year = new Date().getFullYear();
+            if (now > new Date(tetDates[year]).getTime()) year++;
+            const tetTime = new Date(tetDates[year]).getTime();
+            const diff = tetTime - now;
 
-            const second = 1000;
-            const minute = second * 60;
-            const hour = minute * 60;
-            const day = hour * 24;
+            document.getElementById('year-title').innerText = `Tết ${yearNames[year]} ${year}`;
+            document.getElementById('lunar-text').innerText = `Mùng 1: ${new Date(tetTime).toLocaleDateString('vi-VN')}`;
 
-            const d = Math.floor(gap / day);
-            const h = Math.floor((gap % day) / hour);
-            const m = Math.floor((gap % hour) / minute);
-            const s = Math.floor((gap % minute) / second);
-
-            document.getElementById("days").innerText = d < 10 ? "0" + d : d;
-            document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
-            document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
-            document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
-
-            if (gap < 0) {
-                document.querySelector("h1").innerText = "CHÚC MỪNG NĂM MỚI!";
-                document.querySelector(".countdown").innerHTML = "<h2>Tết rồi ông ơi! Nhậu thôi!</h2>";
-            }
+            document.getElementById('days').innerText = Math.floor(diff/86400000).toString().padStart(2,'0');
+            document.getElementById('hours').innerText = Math.floor((diff%86400000)/3600000).toString().padStart(2,'0');
+            document.getElementById('mins').innerText = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
+            document.getElementById('secs').innerText = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
         }
 
-        function showCalendar() {
-            const now = new Date();
-            const duongLich = `Hôm nay: ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
-            
-            // Vì thuật toán âm lịch dài, ta hiển thị đơn giản hoặc dùng API
-            // Ở đây tôi ghi sẵn mốc cho ông dễ theo dõi
-            document.getElementById("calendar").innerHTML = `${duongLich} | Tết Bính Ngọ: 17/02/2026 Dương Lịch`;
+        function openModal() { document.getElementById('lunarModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('lunarModal').style.display = 'none'; }
+
+        const music = document.getElementById('bg-music');
+        function toggleMusic() {
+            if (music.paused) { music.play(); document.getElementById('music-btn').classList.add('playing'); }
+            else { music.pause(); document.getElementById('music-btn').classList.remove('playing'); }
         }
 
-        setInterval(updateCountdown, 1000);
-        showCalendar();
-        updateCountdown();
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.innerHTML = ['🌸','🧧','🌼'][Math.floor(Math.random()*3)];
+            petal.className = 'petal';
+            petal.style.left = Math.random()*100+'vw';
+            petal.style.animationDuration = Math.random()*3+3+'s';
+            document.body.appendChild(petal);
+            setTimeout(() => petal.remove(), 5000);
+        }
+
+        setInterval(update, 1000);
+        setInterval(createPetal, 400);
+        update();
     </script>
 </body>
 </html>
